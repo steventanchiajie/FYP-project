@@ -1,0 +1,88 @@
+{% extends "base.html" %}
+{% block content %}
+<style>
+    :root {
+        --primary-color: #3498db;
+        --secondary-color: #2ecc71;
+        --background-color: #f4f4f4;
+        --text-color: #333;
+        --card-background: #ffffff;
+    }
+    body {
+        font-family: 'Roboto', sans-serif;
+        background-color: var(--background-color);
+        color: var(--text-color);
+    }
+    .content {
+        max-width: 800px;
+        margin: 2rem auto;
+        padding: 2rem;
+        background-color: var(--card-background);
+        border-radius: 8px;
+        box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    }
+    h2 {
+        color: var(--primary-color);
+        border-bottom: 2px solid var(--primary-color);
+        padding-bottom: 0.5rem;
+    }
+    .feedback-item {
+        background-color: #f2f2f2;
+        padding: 20px;
+        margin-bottom: 20px;
+        border-radius: 5px;
+    }
+    .feedback-item p {
+        margin: 0.5rem 0;
+    }
+    .feedback-meta {
+        font-size: 0.9rem;
+        color: #666;
+    }
+    .pagination {
+        display: flex;
+        justify-content: center;
+        list-style-type: none;
+        padding: 0;
+    }
+    .pagination li {
+        margin: 0 5px;
+    }
+    .page-link {
+        display: inline-block;
+        padding: 5px 10px;
+        background-color: var(--primary-color);
+        color: white;
+        text-decoration: none;
+        border-radius: 3px;
+    }
+    .page-link:hover {
+        background-color: #2980b9;
+    }
+</style>
+
+<div class="content">
+    <h2>User Feedbacks</h2>
+
+    {% for feedback in feedbacks.items %}
+        <div class="feedback-item">
+            <p><strong>User:</strong> {{ feedback.user.email }}</p>
+            <p><strong>Rating:</strong> {{ '★' * feedback.rating }}</p>
+            <p><strong>Feedback:</strong> {{ feedback.content }}</p>
+            <p class="feedback-meta">Submitted on: {{ feedback.timestamp.strftime('%Y-%m-%d %H:%M:%S') }}</p>
+        </div>
+    {% endfor %}
+
+    <ul class="pagination">
+        {% for page in feedbacks.iter_pages() %}
+            {% if page %}
+                <li>
+                    <a href="{{ url_for('feedbacks', page=page) }}" class="page-link">{{ page }}</a>
+                </li>
+            {% else %}
+                <li><span class="page-link">...</span></li>
+            {% endif %}
+        {% endfor %}
+    </ul>
+</div>
+{% endblock %}

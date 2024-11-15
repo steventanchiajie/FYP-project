@@ -1,0 +1,191 @@
+{% extends "base.html" %}
+{% block content %}
+    <style>
+        :root {
+            --primary-color: #3498db;
+            --secondary-color: #2ecc71;
+            --background-color: #f4f4f4;
+            --text-color: #333;
+            --card-background: #ffffff;
+        }
+        body {
+            font-family: 'Roboto', sans-serif;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+            background-color: var(--background-color);
+            color: var(--text-color);
+        }
+
+        .content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 2rem;
+            max-width: 800px;
+            margin: 0 auto;
+            width: 100%;
+            box-sizing: border-box;
+        }
+        .news-form {
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            background-color: var(--card-background);
+            padding: 2rem;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        textarea {
+            width: 100%;
+            box-sizing: border-box;
+            margin-bottom: 1rem;
+            padding: 0.5rem;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            resize: vertical;
+        }
+        .alert {
+            padding: 15px;
+            margin-bottom: 20px;
+            border: 1px solid transparent;
+            border-radius: 4px;
+        }
+        
+        .alert-success {
+            color: #3c763d;
+            background-color: #dff0d8;
+            border-color: #d6e9c6;
+        }
+        
+        .alert-error {
+            color: #a94442;
+            background-color: #f2dede;
+            border-color: #ebccd1;
+        }
+        .submit-button {
+            background-color: #2ecc71;
+            border: none;
+            color: white;
+            padding: 10px 20px;
+            text-align: center;
+            text-decoration: none;
+            display: inline-block;
+            font-size: 18px;
+            margin: 4px 2px;
+            cursor: pointer;
+            border-radius: 4px;
+            transition: background-color 0.3s ease;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .submit-button:hover {
+            background-color: #27ae60;
+        }
+        .results {
+            margin-top: 2rem;
+            background-color: var(--card-background);
+            padding: 2rem;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            width: 100%;
+            box-sizing: border-box;
+        }
+        .results h3 {
+            color: var(--primary-color);
+            border-bottom: 2px solid var(--primary-color);
+            padding-bottom: 0.5rem;
+        }
+        .results h4 {
+            color: var(--secondary-color);
+        }
+        .feedback-section {
+            margin-top: 2rem;
+            text-align: center;
+            background-color: var(--card-background);
+            padding: 2rem;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            width: 100%;
+            box-sizing: border-box;
+        }
+        .feedback-button {
+            background-color: var(--primary-color);
+            border: none;
+            color: white;
+            padding: 15px 32px;
+            text-align: center;
+            text-decoration: none;
+            display: inline-block;
+            font-size: 16px;
+            margin: 4px 2px;
+            cursor: pointer;
+            border-radius: 4px;
+            transition: background-color 0.3s ease;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .feedback-button:hover {
+            background-color: #2980b9;
+        }
+    </style>
+</head>
+<body>
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            {% for category, message in messages %}
+                <div class="alert alert-{{ category }}">{{ message }}</div>
+            {% endfor %}
+        {% endif %}
+    {% endwith %}
+    <main class="content">
+        <h2>Fake News Detection</h2>
+        <p>Welcome, {{ current_user.email }}!</p>
+
+        <form class="news-form" method="post">
+            {{ form.hidden_tag() }}
+            <div>
+                {{ form.text.label }}<br>
+                {{ form.text(rows=10, cols=50) }}
+            </div>
+            <div>
+                {{ form.submit(class_="submit-button") }}
+            </div>
+        </form>
+
+        {% if result %}
+        <div class="results">
+            <h3>Results:</h3>
+            <p>Prediction: {{ result }}</p>
+            <p>Sentiment: {{ sentiment }}</p>
+
+            <h4>Summary:</h4>
+            <p>{{ summary }}</p>
+
+            <h4>Entities:</h4>
+            <ul>
+            {% for entity, label in entities %}
+                <li>{{ entity }} ({{ label }})</li>
+            {% endfor %}
+            </ul>
+
+            {% if url %}
+            <h4>Source:</h4>
+            <p><a href="{{ url }}" target="_blank">Read the original article</a></p>
+            {% else %}
+            <h4>Source:</h4>
+            <p>No source URL found for this content.</p>
+            {% endif %}
+        </div>
+        {% endif %}
+
+        <div class="feedback-section">
+            <h3>We value your feedback!</h3>
+            <p>Help us improve by sharing your thoughts.</p>
+            <a href="{{ url_for('submit_feedback') }}" class="feedback-button">Submit Feedback</a>
+        </div>
+    </main>
+</body>
+{% endblock %}
